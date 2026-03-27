@@ -65,7 +65,7 @@ export default function App() {
       <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 64 }}>
         {tab === 'yousu' && <Yousu dogs={dogs} logs={logs} />}
         {tab === 'kiroku' && <Kiroku dogs={dogs} onSave={saveLog} />}
-        {tab === 'omoide' && <Omoide dogs={dogs} logs={logs} onDeleteLog={deleteLog} />}
+        {tab === 'omoide' && <Omoide dogs={dogs} logs={logs} onDeleteLog={deleteLog} onUpdateLog={saveLog} />}
         {tab === 'settei' && (
           <Settei
             dogs={dogs}
