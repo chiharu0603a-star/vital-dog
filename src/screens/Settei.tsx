@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Dog, Settings } from '../types';
 import { DogAvatar } from '../components/DogAvatar';
 import { calcAge } from '../utils/vitals';
+import { Help } from './Help';
 
 type Props = {
   dogs: Dog[];
@@ -11,7 +12,12 @@ type Props = {
 };
 
 export function Settei({ dogs, settings, onEditDog, onSaveSettings }: Props) {
+  const [showHelp, setShowHelp] = useState(false);
   const remaining = 3 - dogs.length;
+
+  if (showHelp) {
+    return <Help onBack={() => setShowHelp(false)} />;
+  }
 
   return (
     <div style={{ padding: 16, paddingBottom: 40 }}>
@@ -70,6 +76,17 @@ export function Settei({ dogs, settings, onEditDog, onSaveSettings }: Props) {
             ))}
           </div>
         </div>
+      </Section>
+
+      {/* ヘルプ */}
+      <Section title="サポート">
+        <button
+          onClick={() => setShowHelp(true)}
+          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', background: 'none', border: 'none', cursor: 'pointer' }}
+        >
+          <span style={{ fontSize: 15, color: 'var(--text-primary)' }}>❓ ヘルプ</span>
+          <span style={{ color: 'var(--text-muted)' }}>›</span>
+        </button>
       </Section>
 
       <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', marginTop: 24 }}>
