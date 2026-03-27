@@ -24,15 +24,16 @@ export function DogAvatar({ dog, size = 40 }: Props) {
       width: size,
       height: size,
       borderRadius: '50%',
-      background: `${dog.color}22`,
-      border: `2px solid ${dog.color}`,
+      background: dog.color,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       fontSize: size * 0.45,
+      fontWeight: 700,
+      color: '#fff',
       flexShrink: 0,
     }}>
-      🐾
+      {dog.name.charAt(0)}
     </div>
   );
 }
