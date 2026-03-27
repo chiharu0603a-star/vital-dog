@@ -7,11 +7,13 @@ import { Help } from './Help';
 type Props = {
   dogs: Dog[];
   settings: Settings;
+  navDogId: string | null;
   onEditDog: (dog: Dog | null) => void;
   onSaveSettings: (s: Settings) => void;
+  onChangeNavDog: (id: string) => void;
 };
 
-export function Settei({ dogs, settings, onEditDog, onSaveSettings }: Props) {
+export function Settei({ dogs, settings, navDogId, onEditDog, onSaveSettings, onChangeNavDog }: Props) {
   const [showHelp, setShowHelp] = useState(false);
   const remaining = 3 - dogs.length;
 
@@ -76,6 +78,42 @@ export function Settei({ dogs, settings, onEditDog, onSaveSettings }: Props) {
             ))}
           </div>
         </div>
+
+        {dogs.length > 1 && (
+          <>
+            <div style={{ height: 1, background: 'var(--border)' }} />
+            <div style={{ padding: '12px 0 4px' }}>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 10px' }}>
+                ナビに表示するわんこ
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingBottom: 8 }}>
+                {dogs.map(dog => {
+                  const selected = dog.id === navDogId;
+                  return (
+                    <button
+                      key={dog.id}
+                      onClick={() => onChangeNavDog(dog.id)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '8px 10px', borderRadius: 10, cursor: 'pointer',
+                        border: `1.5px solid ${selected ? dog.color : 'var(--border)'}`,
+                        background: selected ? `${dog.color}18` : 'var(--bg-base)',
+                      }}
+                    >
+                      <DogAvatar dog={dog} size={32} />
+                      <span style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', textAlign: 'left', fontWeight: selected ? 700 : 400 }}>
+                        {dog.name}
+                      </span>
+                      {selected && (
+                        <span style={{ fontSize: 16, color: dog.color }}>✓</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
       </Section>
 
       {/* ヘルプ */}
