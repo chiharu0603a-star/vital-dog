@@ -1,5 +1,11 @@
 import type { Log } from '../types';
 
+/** Date を端末のローカル日付で YYYY-MM-DD にする（toISOString は UTC なので朝ずれる） */
+export function toLocalDateStr(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
 export function getRecentAverage(logs: Log[], dogId: string, days = 3): {
   app: number | null;
   sto: number | null;
@@ -7,7 +13,7 @@ export function getRecentAverage(logs: Log[], dogId: string, days = 3): {
 } {
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - days);
-  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  const cutoffStr = toLocalDateStr(cutoff);
 
   const relevant = logs.filter(
     l => l.dogId === dogId && l.category === 'honjitsu' && l.date >= cutoffStr
@@ -32,15 +38,18 @@ export function getStatusBadge(avg: { app: number | null; sto: number | null; vi
 
 export function calcAge(birthdate: string): string {
   if (!birthdate) return '';
-  const birth = new Date(birthdate);
+  // 'YYYY-MM-DD' を UTC ではなくローカル日付として解釈する
+  const [by, bm, bd] = birthdate.split('-').map(Number);
+  if (!by || !bm || !bd) return '';
   const now = new Date();
-  const years = now.getFullYear() - birth.getFullYear();
-  const months = now.getMonth() - birth.getMonth();
-  const totalMonths = years * 12 + months;
+  let totalMonths = (now.getFullYear() - by) * 12 + (now.getMonth() + 1 - bm);
+  // 今月まだ誕生日（日）に達していなければ1ヶ月引く
+  if (now.getDate() < bd) totalMonths -= 1;
+  if (totalMonths < 0) return '0ヶ月';
   if (totalMonths < 12) return `${totalMonths}ヶ月`;
   return `${Math.floor(totalMonths / 12)}歳${totalMonths % 12 ? totalMonths % 12 + 'ヶ月' : ''}`;
 }
 
 export function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return toLocalDateStr(new Date());
 }
