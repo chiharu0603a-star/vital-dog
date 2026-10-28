@@ -1,73 +1,54 @@
-# React + TypeScript + Vite
+# Vital Dog
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+愛犬の健康データを家族で見守るノート。PWA対応のWebアプリです。
 
-Currently, two official plugins are available:
+## 主な画面・機能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **オンボーディング / 犬の登録** — 愛犬のプロフィールを登録（写真が未登録の場合は頭文字や犬のシルエットで表示）
+- **ようす** — 愛犬の様子を確認する画面
+- **きろく** — 健康に関する記録をつける画面
+- **おもいで** — 思い出の記録（詳細表示・編集・削除に対応）
+- **せってい** — 各種設定とヘルプページ
+- ナビゲーションから犬を切り替えて表示できます
 
-## React Compiler
+## 技術スタック
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 + TypeScript
+- Vite 8
+- vite-plugin-pwa（PWA対応）
+- ESLint
 
-## Expanding the ESLint configuration
+## セットアップ
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+> `vite-plugin-pwa` との互換性のため、`.npmrc` で `legacy-peer-deps` を有効にしています。
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## スクリプト
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| コマンド | 内容 |
+|---|---|
+| `npm run dev` | 開発サーバーを起動 |
+| `npm run build` | 型チェック（`tsc -b`）＋本番ビルド |
+| `npm run preview` | ビルド結果をプレビュー |
+| `npm run lint` | ESLintを実行 |
+
+## ディレクトリ構成
+
 ```
+src/
+├── App.tsx
+├── main.tsx
+├── screens/      # ようす / きろく / おもいで / せってい / ヘルプ など
+├── components/
+├── hooks/
+├── types/
+└── utils/
+```
+
+## ブランチについて
+
+デフォルトブランチは `master` です。かつて `main` にのみ入っていた最新コミット（nav dog icon with selector）は、PR #1 で `master` に統合済みです。
