@@ -2,18 +2,21 @@ import React, { useState } from 'react';
 import type { Dog, Settings } from '../types';
 import { DogAvatar } from '../components/DogAvatar';
 import { calcAge } from '../utils/vitals';
+import { formatBytes } from '../utils/storage';
+import type { StorageUsage } from '../utils/storage';
 import { Help } from './Help';
 
 type Props = {
   dogs: Dog[];
   settings: Settings;
+  usage: StorageUsage;
   navDogId: string | null;
   onEditDog: (dog: Dog | null) => void;
   onSaveSettings: (s: Settings) => void;
   onChangeNavDog: (id: string) => void;
 };
 
-export function Settei({ dogs, settings, navDogId, onEditDog, onSaveSettings, onChangeNavDog }: Props) {
+export function Settei({ dogs, settings, usage, navDogId, onEditDog, onSaveSettings, onChangeNavDog }: Props) {
   const [showHelp, setShowHelp] = useState(false);
   const remaining = 3 - dogs.length;
 
@@ -114,6 +117,35 @@ export function Settei({ dogs, settings, navDogId, onEditDog, onSaveSettings, on
             </div>
           </>
         )}
+      </Section>
+
+      {/* データ保存量 */}
+      <Section title="データ保存">
+        <div style={{ padding: '12px 0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+            <span style={{ fontSize: 14, color: 'var(--text-primary)' }}>保存容量の使用量</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: usage.percent >= 90 ? '#ef4444' : 'var(--text-primary)' }}>
+              {formatBytes(usage.usedBytes)} / 約{formatBytes(usage.quotaBytes)}（{usage.percent}%）
+            </span>
+          </div>
+          <div style={{ height: 8, background: 'var(--bg-base)', borderRadius: 4, overflow: 'hidden' }}>
+            <div
+              style={{
+                width: `${usage.percent}%`,
+                height: '100%',
+                borderRadius: 4,
+                background: usage.percent >= 90 ? '#ef4444' : usage.percent >= 75 ? '#f59e0b' : 'var(--accent)',
+                transition: 'width 0.4s ease',
+              }}
+            />
+          </div>
+          <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '8px 0 0' }}>
+            うち写真： {formatBytes(usage.photoBytes)}
+          </p>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '6px 0 0', lineHeight: 1.6 }}>
+            容量がいっぱいに近づくと、新しい写真は自動で小さくして保存します。それでも保存できないときは、画面の上部にお知らせが出ます（写真が無言で消えることはありません）。
+          </p>
+        </div>
       </Section>
 
       {/* ヘルプ */}
