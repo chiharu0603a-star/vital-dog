@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from './hooks/useStore';
+import type { StorageMessage } from './hooks/useStore';
 import { storage } from './utils/storage';
 import { Yousu } from './screens/Yousu';
 import { Kiroku } from './screens/Kiroku';
@@ -10,7 +11,10 @@ import { Onboarding } from './screens/Onboarding';
 import type { Dog, Tab } from './types';
 
 export default function App() {
-  const { dogs, logs, settings, saveDog, deleteDog, saveLog, deleteLog, saveSettings } = useStore();
+  const {
+    dogs, logs, settings, saveDog, deleteDog, saveLog, deleteLog, saveSettings,
+    usage, storageMessage, clearStorageMessage,
+  } = useStore();
   const [tab, setTab] = useState<Tab>('yousu');
   const [editingDog, setEditingDog] = useState<Dog | null | undefined>(undefined);
   const [onboarded, setOnboarded] = useState(() => storage.isOnboarded());
@@ -37,13 +41,16 @@ export default function App() {
   // Onboarding
   if (!onboarded) {
     return (
-      <Onboarding
-        onComplete={(dog) => {
-          saveDog(dog);
-          storage.setOnboarded();
-          setOnboarded(true);
-        }}
-      />
+      <>
+        <StorageBanner message={storageMessage} onClose={clearStorageMessage} />
+        <Onboarding
+          onComplete={(dog) => {
+            saveDog(dog);
+            storage.setOnboarded();
+            setOnboarded(true);
+          }}
+        />
+      </>
     );
   }
 
@@ -51,6 +58,7 @@ export default function App() {
   if (editingDog !== undefined) {
     return (
       <div style={{ maxWidth: 480, margin: '0 auto' }}>
+        <StorageBanner message={storageMessage} onClose={clearStorageMessage} />
         <DogForm
           initial={editingDog ?? undefined}
           onSave={saveDog}
@@ -76,6 +84,7 @@ export default function App() {
 
   return (
     <div style={{ maxWidth: 480, margin: '0 auto', minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg-base)' }}>
+      <StorageBanner message={storageMessage} onClose={clearStorageMessage} />
       {/* Main content */}
       <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 64 }}>
         {tab === 'yousu' && <Yousu dogs={dogs} logs={logs} />}
@@ -85,6 +94,7 @@ export default function App() {
           <Settei
             dogs={dogs}
             settings={settings}
+            usage={usage}
             navDogId={navDog?.id ?? null}
             onEditDog={(d) => setEditingDog(d)}
             onSaveSettings={saveSettings}
@@ -117,6 +127,43 @@ export default function App() {
           </button>
         ))}
       </nav>
+    </div>
+  );
+}
+
+// 保存に関するお知らせ（容量不足の警告・自動縮小の通知）。無言で失敗しないための表示。
+function StorageBanner({ message, onClose }: { message: StorageMessage | null; onClose: () => void }) {
+  if (!message) return null;
+  const isError = message.kind === 'error';
+  return (
+    <div
+      role="alert"
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 60,
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 8,
+        padding: '10px 12px',
+        background: isError ? '#7f1d1d' : '#14532d',
+        color: '#fff',
+        fontSize: 13,
+        lineHeight: 1.5,
+      }}
+    >
+      <span style={{ flex: 1 }}>
+        {isError ? '⚠️ ' : 'ℹ️ '}
+        {message.text}
+      </span>
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="閉じる"
+        style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: 16, padding: 0, lineHeight: 1 }}
+      >
+        ×
+      </button>
     </div>
   );
 }
